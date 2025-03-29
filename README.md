@@ -13,18 +13,24 @@ This script automates the installation and configuration of an SMB share on a De
 ## Usage
 
 1. Clone or download the script to your Debian 12 server.
+   ```bash
+   wget https://raw.githubusercontent.com/Chiko1337/smb-share-autoinstall-debian-ubuntu/refs/heads/main/smbshare-autoinstall.sh
+   ```
 2. Modify the variables at the beginning of the script if needed:
+   ```bash
+   nano smbshare-autoinstall.sh
+   ```
    - `SHARE_NAME`: Name of the SMB share.
    - `SHARE_PATH`: Path of the shared directory.
    - `SMB_USER`: Samba username.
    - `SMB_PASSWORD`: Samba user password.
 3. Make the script executable:
    ```bash
-   chmod +x install_smb.sh
+   chmod +x smbshare-autoinstall.sh
    ```
 4. Run the script with sudo:
    ```bash
-   sudo ./install_smb.sh
+   sudo ./smbshare-autoinstall.sh
    ```
 
 ## Notes
