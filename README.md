@@ -4,7 +4,7 @@ This script automates the installation and configuration of an SMB share on a De
 
 ## Features
 - Installs Samba if not already installed.
-- Creates a shared directory at `/srv/smbshare`.
+- Creates a shared directory.
 - Sets permissions for the shared directory.
 - Creates a Samba user and sets a password.
 - Configures Samba to allow authenticated access to the share.
