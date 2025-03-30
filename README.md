@@ -30,7 +30,7 @@ This script automates the installation and configuration of an SMB share on a De
    ```
 4. Run the script with sudo:
    ```bash
-   sudo ./smbshare-autoinstall.sh
+   sudo bash ./smbshare-autoinstall.sh
    ```
 
 ## Notes
