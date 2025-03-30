@@ -1,18 +1,21 @@
 #!/bin/bash
 
-# Variables
-SHARE_NAME="sambashare"
-SHARE_PATH="/srv/$SHARE_NAME"
-SMB_USER="smbuser"
-SMB_PASSWORD="SambaPass123"
-CONFIG_PATH="/etc/samba/smb.conf"
-
 # Color codes
 GREEN="\e[32m"
 YELLOW="\e[33m"
 BLUE="\e[34m"
 RED="\e[31m"
 NC="\e[0m" # No Color
+
+# Prompt user for input
+echo -e "${YELLOW}Enter the path for the share (default: /srv/sambashare):${NC}"
+read -r SHARE_PATH
+SHARE_PATH=${SHARE_PATH:-/srv/sambashare}
+echo -e "${YELLOW}Enter the Samba username:${NC}"
+read -r SMB_USER
+echo -e "${YELLOW}Enter the Samba password:${NC}"
+read -sr SMB_PASSWORD
+CONFIG_PATH="/etc/samba/smb.conf"
 
 # Update package list and install Samba if not installed
 if ! command -v smbd &> /dev/null; then
@@ -45,8 +48,8 @@ echo -e "$SMB_PASSWORD\n$SMB_PASSWORD" | smbpasswd -s -a "$SMB_USER" >/dev/null 
 smbpasswd -e "$SMB_USER" >/dev/null 2>&1
 
 # Check if the Samba configuration already contains the share
-grep -q "\[$SHARE_NAME\]" "$CONFIG_PATH" || echo "
-[$SHARE_NAME]
+grep -q "\[sambashare\]" "$CONFIG_PATH" || echo "
+[sambashare]
    path = $SHARE_PATH
    browseable = yes
    read only = no
@@ -64,4 +67,4 @@ systemctl restart smbd nmbd >/dev/null 2>&1
 systemctl enable smbd nmbd >/dev/null 2>&1
 
 # Output completion message
-echo -e "${GREEN}Samba share has been set up successfully: ${BLUE}//$HOSTNAME/$SHARE_NAME${NC}"
+echo -e "${GREEN}Samba share has been set up successfully: ${BLUE}//$HOSTNAME/sambashare${NC}"
