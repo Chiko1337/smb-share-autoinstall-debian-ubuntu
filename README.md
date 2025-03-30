@@ -18,11 +18,12 @@ This script automates the installation and configuration of an SMB share on a De
    ```
 2. Make the script executable:
    ```bash
+   sed -i 's/\r$//' smbshare-autoinstall.sh
    chmod +x smbshare-autoinstall.sh
    ```
 3. Run the script with sudo:
    ```bash
-   sudo bash ./smbshare-autoinstall.sh
+   sudo bash smbshare-autoinstall.sh
    ```
 4. Follow the script to set the variables:
    - `SHARE_PATH`: Path of the shared directory.
