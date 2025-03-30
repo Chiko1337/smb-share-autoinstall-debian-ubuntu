@@ -1,27 +1,51 @@
 #!/bin/bash
 
 # Variables
-SHARE_NAME="smbshare"
+SHARE_NAME="sambashare"
 SHARE_PATH="/srv/$SHARE_NAME"
 SMB_USER="smbuser"
-SMB_PASSWORD="!!ChangeMe!!"
+SMB_PASSWORD="SambaPass123"
 CONFIG_PATH="/etc/samba/smb.conf"
 
-# Update and installation of Samba
-apt update && apt install -y samba
+# Color codes
+GREEN="\e[32m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+RED="\e[31m"
+NC="\e[0m" # No Color
 
-# Create directory
-mkdir -p "$SHARE_PATH"
-chmod 777 "$SHARE_PATH"
-chown nobody:nogroup "$SHARE_PATH"
+# Update package list and install Samba if not installed
+if ! command -v smbd &> /dev/null; then
+    echo -e "${YELLOW}Installing Samba...${NC}"
+    apt update -qq >/dev/null 2>&1 && apt install -y samba >/dev/null 2>&1
+else
+    echo -e "${GREEN}Samba is already installed.${NC}"
+fi
 
-# Create Samba user
-useradd -M -s /sbin/nologin "$SMB_USER" || echo "Benutzer bereits vorhanden"
-echo -e "$SMB_PASSWORD\n$SMB_PASSWORD" | smbpasswd -a "$SMB_USER"
-smbpasswd -e "$SMB_USER"
+# Create the shared directory if it doesn't exist
+if [ ! -d "$SHARE_PATH" ]; then
+    mkdir -p "$SHARE_PATH"
+    chmod 777 "$SHARE_PATH"
+    chown nobody:nogroup "$SHARE_PATH"
+    echo -e "${BLUE}Created shared directory at $SHARE_PATH${NC}"
+else
+    echo -e "${YELLOW}Shared directory already exists.${NC}"
+fi
 
-# Customize Samba configuration
-echo "
+# Create system user if not exists
+if ! id "$SMB_USER" &>/dev/null; then
+    useradd -M -s /sbin/nologin "$SMB_USER" >/dev/null 2>&1
+    echo -e "${GREEN}System user $SMB_USER created.${NC}"
+else
+    echo -e "${YELLOW}System user $SMB_USER already exists.${NC}"
+fi
+
+# Set Samba password for the user
+echo -e "$SMB_PASSWORD\n$SMB_PASSWORD" | smbpasswd -s -a "$SMB_USER" >/dev/null 2>&1
+smbpasswd -e "$SMB_USER" >/dev/null 2>&1
+
+# Check if the Samba configuration already contains the share
+grep -q "\[$SHARE_NAME\]" "$CONFIG_PATH" || echo "
 [$SHARE_NAME]
    path = $SHARE_PATH
    browseable = yes
@@ -33,9 +57,11 @@ echo "
    directory mask = 0777
 " >> "$CONFIG_PATH"
 
-# Restart Samba service
-systemctl restart smbd
-systemctl enable smbd
+echo -e "${GREEN}Samba configuration updated.${NC}"
 
-# Finished
-echo "SMB share has been set up successfully: //$HOSTNAME/$SHARE_NAME"
+# Restart and enable Samba services
+systemctl restart smbd nmbd >/dev/null 2>&1
+systemctl enable smbd nmbd >/dev/null 2>&1
+
+# Output completion message
+echo -e "${GREEN}Samba share has been set up successfully: ${BLUE}//$HOSTNAME/$SHARE_NAME${NC}"
