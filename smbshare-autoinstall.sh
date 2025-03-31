@@ -67,4 +67,4 @@ systemctl restart smbd nmbd >/dev/null 2>&1
 systemctl enable smbd nmbd >/dev/null 2>&1
 
 # Output completion message
-echo -e "${GREEN}Samba share has been set up successfully: ${BLUE}//$IPADDRESS/sambashare${NC}"
+echo -e "${GREEN}Samba share has been set up successfully: ${BLUE}//YourIP/${SHARE_PATH${NC}"
