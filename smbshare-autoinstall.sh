@@ -49,7 +49,7 @@ smbpasswd -e "$SMB_USER" >/dev/null 2>&1
 
 # Check if the Samba configuration already contains the share
 grep -q "\[sambashare\]" "$CONFIG_PATH" || echo "
-[sambashare]
+[$SMB_USER]
    path = $SHARE_PATH
    browseable = yes
    read only = no
